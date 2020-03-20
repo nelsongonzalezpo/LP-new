@@ -1,11 +1,3 @@
-//
-//  LP_ExerciseTests.swift
-//  LP-ExerciseTests
-//
-//  Created by Nelson Gonzalez on 11/22/18.
-//  Copyright © 2018 Nelson Gonzalez. All rights reserved.
-//
-
 import XCTest
 @testable import LP_Exercise
 
