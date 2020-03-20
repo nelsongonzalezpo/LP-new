@@ -148,3 +148,5 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
 }
 
+//Nota: La implementacion del search history pudo haberse hecho con NSMutableArray o guardando
+//      la informacion en un plist llamado busuqeda.plist.
