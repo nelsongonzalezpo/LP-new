@@ -1,0 +1,6 @@
+framework module Pods_LP_ExerciseUITests {
+  umbrella header "Pods-LP-ExerciseUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
