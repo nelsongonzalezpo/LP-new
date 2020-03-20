@@ -20,7 +20,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var objetos: [[String: Any]] = [[:]]
     var nombres: [Any] = []
     var precios: [Any] = []
-    var rebajaPrecios: [Any] = []
+    var ubicaciones: [Any] = []
     var imagenes: [String] = []
 
 
@@ -50,7 +50,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func obtenerDatos(){
         
     //New Api
-    let firstPart: String = "https://shoppapp.liverpool.com.mx/appclienteservices/services/v3/plp?search-string="
+    let firstPart: String = "https://shopappqa.liverpool.com.mx/appclienteservices/services/v3/plp?search-string="
     let secondPart: String = "&page-number=1"
     
     let finalApi = firstPart + "\(seachTextField.text!)" + secondPart
@@ -62,44 +62,70 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //Frames
         if let jsonData = datas.result.value{
             
+            
+            
             //Split data into multiples dictionaries
             let jsonObject: Dictionary = jsonData as! Dictionary<String, Any>
             
+            
+           
+            
             let jsonProduct: Dictionary = jsonObject["status"] as! Dictionary<String, Any>
+            
+           
             let jsonProduct2: Dictionary = jsonObject["plpResults"] as! Dictionary<String, Any>
+            
+            print("jsonProduct2")
+            print(jsonProduct2)
             
             let jsonProduct3: [[String: Any]] = jsonProduct2["records"] as! [[String: Any]]
             
+            print("jsonProduct3")
+            print(jsonProduct3)
             
-            //Extract data from dictionaries
-            for elements in 0...jsonProduct3.count-1{
-                print("El elemento", elements, "\(jsonProduct3[elements])")
-                self.objetos.append(jsonProduct3[elements])
+            if(jsonProduct3.count > 0){
+            
+                //Extract data from dictionaries
+                for elements in 0...jsonProduct3.count-1{
+                    print("El elemento", elements, "\(jsonProduct3[elements])")
+                    self.objetos.append(jsonProduct3[elements])
+                    
+                    let productListName = jsonProduct3[elements]["productDisplayName"]! as Any
+                    let listPrice = jsonProduct3[elements]["maximumListPrice"]! as Any
+                    let minimumPromoPrice = jsonProduct3[elements]["productId"]! as Any
+                    let smImage: String = jsonProduct3[elements]["lgImage"]! as! String
+                    
+                    
+                    //print(elements, nombre)
+                    self.nombres.append(productListName)
+                    self.precios.append(listPrice)
+                    self.ubicaciones.append(minimumPromoPrice)
+                    self.imagenes.append(smImage)
+                    
+                    
+                    
+                    
+                }
                 
-                let productListName = jsonProduct3[elements]["productDisplayName"]! as Any
-                let listPrice = jsonProduct3[elements]["listPrice"]! as Any
-                let minimumPromoPrice = jsonProduct3[elements]["minimumPromoPrice"]! as Any
-                let smImage: String = jsonProduct3[elements]["lgImage"]! as! String
-                
-                
-                //print(elements, nombre)
-                self.nombres.append(productListName)
-                self.precios.append(listPrice)
-                self.rebajaPrecios.append(minimumPromoPrice)
-                self.imagenes.append(smImage)
-                
-                print("THE IMAGES")
-                print(self.imagenes)
-
-
             }
             
-            print("ProductNames")
-            print(self.nombres)
-            print(self.nombres.count)
+            else{
+                let alert = UIAlertController(title: "Error", message: "No encontramos este producto", preferredStyle: .alert)
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                
+                self.present(alert, animated: true)
+            }
+            
+            
+           
+            
+            //print("ProductNames")
+            //print(self.nombres)
+            //print(self.nombres.count)
             self.tableView.reloadData()
-            print("Again the images")
-            print(self.imagenes)
+            //print("Again the images")
+            //print(self.imagenes)
             
           
             
@@ -121,12 +147,28 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //Use labels of cell
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellIdentifier") as! ViewControllerTableViewCell
+        
+        
+    
         //cell?.textLabel?.text = postData[indexPath.row]
         cell.myName.text = "\(nombres[indexPath.row])"
         cell.oldPrice.text = "\(precios[indexPath.row]) MXN"
-        cell.newPrice.text = "\(rebajaPrecios[indexPath.row]) MXN"
+        cell.newPrice.text = "ID: \(ubicaciones[indexPath.row])"
+        
+        DispatchQueue.global(qos: .background).async {
+            let url = URL(string:(self.imagenes[indexPath.row]))
+            let secondUrl = URL(string:("https://ss634.liverpool.com.mx/lg/1087818248.jpg"))
+            let data = try? Data(contentsOf: url!)
+            let secondData = try? Data(contentsOf: secondUrl!)
+            let image: UIImage = UIImage(data: data ?? secondData!)!
+            DispatchQueue.main.async {
+                cell.imageView?.image = image
+            }
+        }
+
         
         //let urlkey = imagenes[indexPath.row]
+        
         
         if let mediaPhotoUrlNotNil:String = imagenes[indexPath.row] {
             if let mediaPhotoUrlToNSURL = NSURL(string: mediaPhotoUrlNotNil) {
@@ -153,6 +195,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
+    
+   
 
 
 
