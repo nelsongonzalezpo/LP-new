@@ -48,6 +48,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     //Rock and Roll of code
     func obtenerDatos(){
+        //Reinitialize
+        objetos.removeAll()
+        var jsonObject: Dictionary <String, Any> = [:]
+        var jsonProduct: Dictionary <String, Any> = [:]
+        var jsonProduct2: Dictionary <String, Any> = [:]
+        var jsonProduct3: [[String: Any]] = [["":""]]
+
         
     //New Api
     let firstPart: String = "https://shopappqa.liverpool.com.mx/appclienteservices/services/v3/plp?search-string="
@@ -65,23 +72,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             
             //Split data into multiples dictionaries
-            let jsonObject: Dictionary = jsonData as! Dictionary<String, Any>
-            
-            
-           
-            
-            let jsonProduct: Dictionary = jsonObject["status"] as! Dictionary<String, Any>
-            
-           
-            let jsonProduct2: Dictionary = jsonObject["plpResults"] as! Dictionary<String, Any>
-            
-            print("jsonProduct2")
-            print(jsonProduct2)
-            
-            let jsonProduct3: [[String: Any]] = jsonProduct2["records"] as! [[String: Any]]
-            
-            print("jsonProduct3")
-            print(jsonProduct3)
+            jsonObject = jsonData as! Dictionary<String, Any>
+            jsonProduct = jsonObject["status"] as! Dictionary<String, Any>
+            jsonProduct2 = jsonObject["plpResults"] as! Dictionary<String, Any>
+            jsonProduct3 = jsonProduct2["records"] as! [[String: Any]]
             
             if(jsonProduct3.count > 0){
             
@@ -102,9 +96,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     self.ubicaciones.append(minimumPromoPrice)
                     self.imagenes.append(smImage)
                     
-                    
-                    
-                    
                 }
                 
             }
@@ -118,16 +109,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             
             
-           
-            
-            //print("ProductNames")
-            //print(self.nombres)
-            //print(self.nombres.count)
             self.tableView.reloadData()
-            //print("Again the images")
-            //print(self.imagenes)
-            
-          
             
             
 
@@ -138,23 +120,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     
    
-    //Table view necessary
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return nombres.count
         
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //Use labels of cell
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellIdentifier") as! ViewControllerTableViewCell
         
         
     
-        //cell?.textLabel?.text = postData[indexPath.row]
         cell.myName.text = "\(nombres[indexPath.row])"
         cell.oldPrice.text = "\(precios[indexPath.row]) MXN"
         cell.newPrice.text = "ID: \(ubicaciones[indexPath.row])"
         
+        //Convert image
         DispatchQueue.global(qos: .background).async {
             let url = URL(string:(self.imagenes[indexPath.row]))
             let secondUrl = URL(string:("https://ss634.liverpool.com.mx/lg/1087818248.jpg"))
@@ -166,28 +146,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
         }
 
-        
-        //let urlkey = imagenes[indexPath.row]
-        
-        
-        if let mediaPhotoUrlNotNil:String = imagenes[indexPath.row] {
-            if let mediaPhotoUrlToNSURL = NSURL(string: mediaPhotoUrlNotNil) {
-                if case let cell.myImage = NSData(contentsOf: mediaPhotoUrlToNSURL as URL) {
-                    //not nil
-                    
-                } else {
-                    //nil
-                }
-            } else {
-                //its nil
-            }
-        } else {
-            //its nil
-        }
-        
-        //cell.myImage = UIImageView(frame: imagenes[indexPath.row])
-        
-//
         return cell
         
     }
